@@ -1,0 +1,83 @@
+<%# app/views/topics/index.html.erb %>
+<h1 class="text-2xl font-bold mb-4">topics</h1>
+
+<div class="mb-4">
+  <%= link_to 'New topic', new_topic_path, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+</div>
+
+<% if @topics.any? %>
+  <ul>
+    <% @topics.each do |topic| %>
+      <li class="border-b py-2">
+        <%# We don't need topic.present? here anymore because of the user check below %>
+        <%= link_to topic.title, topic, class: "text-blue-600 hover:underline" %>
+
+        <%# Use the safe navigation operator (&.) AND provide a default %>
+        <span class="text-gray-500 text-sm">
+          by <%= topic.user&.email || "Unknown User" %>
+        </span>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>There are no topics yet. Be the first to <%= link_to 'create one', new_topic_path %>!</p>
+<% end %>
+
+<%# if current_user == @topic.user || current_user&.admin? %>
+  <%#= link_to 'Edit', edit_topic_path(@topic), class: "bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded" %>
+  <%#= link_to 'Destroy', @topic, data: { "turbo-method": :delete, "turbo-confirm": "Are you sure?" }, class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" %>
+<%# end %>
+
+<h2 class="text-xl font-bold mt-8 mb-4">Replies</h2>
+
+<!--<div id="replies">-->
+  <%#= render @replies %>
+<!--</div>-->
+
+<div class="mt-4">
+  <%= link_to 'Reply to this topic', new_topic_reply_path(@topic), class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
+</div>
+
+<%# app/views/topics/new.html.erb %>
+<h1 class="text-2xl font-bold mb-4">New topic</h1>
+
+<%= render 'form' %>
+
+<%# app/views/topics/edit.html.erb %>
+<h1 class="text-2xl font-bold mb-4">Edit topic</h1>
+
+<%= render 'form' %>
+
+<%# app/views/topics/_form.html.erb %>
+
+<%= form_with(model: @topic, class: "space-y-4") do |form| %>
+  <% if @topic.errors.any? %>
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+      <strong class="font-bold">Error!</strong>
+      <ul>
+        <% @topic.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title %>
+    <%= form.text_field :title, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+  </div>
+
+  <div>
+    <%= form.label :category_id %>
+    <%= form.select :category_id, @categories.map { |c| [c.name, c.id] }, { prompt: 'Select a category' }, { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" } %>
+  </div>
+
+  <div>
+    <%= form.label :content %>
+    <%= form.text_area :content, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50", rows: 5 %>
+  </div>
+
+  <div>
+    <%= form.submit class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+  </div>
+<% end %>
